@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Password Dashboard</title>
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<nav>
+
+<div class="logo">
+
+<i class="fa-solid fa-shield-halved"></i>
+
+Password Dashboard
+
+</div>
+
+<ul>
+
+<li><a href="/">Home</a></li>
+
+<li><a href="/dashboard">Dashboard</a></li>
+
+</ul>
+
+</nav>
+
+<h2 class="section-title">
+
+<span>Generate</span> Secure Password
+
+</h2>
+
+<div class="grid">
+
+<div class="card">
+
+<form action="/generate" method="POST">
+
+<label>
+
+Password Length :
+
+<span id="lengthValue">
+
+{{ selected_length }}
+
+</span>
+
+</label>
+
+<input
+type="range"
+id="lengthSlider"
+name="length"
+min="8"
+max="64"
+value="{{ selected_length }}"
+oninput="updateLengthValue()">
+<div class="checkbox-group">
+
+<label>
+
+<input
+type="checkbox"
+name="uppercase"
+checked>
+
+Uppercase
+
+</label>
+
+<label>
+
+<input
+type="checkbox"
+name="lowercase"
+checked>
+
+Lowercase
+
+</label>
+
+<label>
+
+<input
+type="checkbox"
+name="numbers"
+checked>
+
+Numbers
+
+</label>
+
+<label>
+
+<input
+type="checkbox"
+name="symbols"
+checked>
+
+Symbols
+
+</label>
+
+</div>
+
+<button
+class="btn"
+type="submit">
+
+Generate Password
+
+</button>
+
+</form>
+
+{% if generated_password %}
+
+<div class="password-box">
+
+<input
+id="password"
+type="text"
+value="{{ generated_password }}"
+readonly>
+
+<button
+type="button"
+class="copy-btn"
+onclick="copyPassword()">
+
+Copy
+
+</button>
+
+</div>
+
+{% endif %}
+<h3>Recent Passwords</h3>
+
+{% if history %}
+
+<div class="result-box">
+
+<ul>
+
+{% for item in history %}
+
+<li>
+
+<code>{{ item }}</code>
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+</div>
+
+{% else %}
+
+<p>No passwords generated yet.</p>
+
+{% endif %}
+
+</div>
+
+<div class="card">
+
+<form action="/analyze" method="POST">
+
+<label>
+
+Enter Password
+
+</label>
+
+<div class="password-wrapper">
+
+<input
+id="analyzePassword"
+type="password"
+name="password"
+placeholder="Enter password"
+onkeyup="updateStrengthMeter()"
+required>
+
+<button
+type="button"
+class="eye-btn"
+onclick="togglePassword()">
+
+👁
+
+</button>
+
+</div>
+
+<div class="strength-container">
+
+<div class="strength-bar">
+
+<div
+id="strengthFill"
+class="strength-fill">
+
+</div>
+
+</div>
+
+<p
+id="strengthText">
+
+Type your password...
+
+</p>
+
+</div>
+
+<br>
+
+<button
+class="btn"
+type="submit">
+
+Analyze Password
+
+</button>
+
+<br><br>
+
+<a href="/download_pdf" class="btn">
+
+Download PDF Report
+
+</a>
+
+</form>
+{% if analysis %}
+
+<div class="result-box">
+
+<h3>
+
+{{ analysis.level }}
+
+</h3>
+
+<p>
+
+<strong>Security Score:</strong>
+
+{{ analysis.score }}/100
+
+</p>
+
+<p>
+
+<strong>Entropy:</strong>
+
+{{ analysis.entropy }} bits
+
+</p>
+
+<p>
+
+<strong>Estimated Crack Time:</strong>
+
+{{ analysis.crack_time }}
+
+</p>
+
+<p>
+
+<strong>Password Length:</strong>
+
+{{ analysis.length }}
+
+</p>
+
+<hr>
+
+<h3>
+
+Security Suggestions
+
+</h3>
+
+<ul>
+
+{% for item in analysis.feedback %}
+
+<li>
+
+{{ item }}
+
+</li>
+
+{% endfor %}
+
+</ul>
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<footer>
+
+<p>
+
+© 2026 Advanced Password Security Suite
+
+</p>
+
+</footer>
+<div id="toast" class="toast">
+
+Password Copied Successfully ✅
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
